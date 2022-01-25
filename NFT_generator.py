@@ -7,9 +7,9 @@ import random
 bpy.types.Scene.texturesCollection = bpy.props.StringProperty()
 bpy.types.Scene.lightCollection = bpy.props.StringProperty()
 
-listOfMainColl = []
-listOfSecondColl = []
-listOfThirdColl = []
+listOfMainColl = ['Body','Hands']
+listOfSecondColl = ['Head','Buttons','Items','Glasses','Arms']
+listOfThirdColl = ['Nose','Eye','Lips']
 
 
 
@@ -125,11 +125,13 @@ class VIEW3D_PT_NFT_Panel_One(bpy.types.Panel):
         row = layout.row()
         row.label(text='Generator settings')
         mytool = scene.NFT_prop
-        col_main = layout.box().column(align=True)
+        col_main = layout.box().column(align=False)
         
         #row = layout.row()
         col_main.prop(mytool, 'quantity', text="Quantity")
+        col_main.prop(mytool, 'degree', text="Degree of Difference", slider=True)
         col_main.prop(mytool, 'use_background', text="Use background")
+        
         
         split = col_main.split(factor=0.6)
         col_1 = split.column(align=True)
@@ -196,7 +198,7 @@ class VIEW3D_PT_NFT_Panel_Two(bpy.types.Panel):
         
         col = layout.box().column(align=True)
         
-        for coll in context.collection.children:
+        for coll in bpy.context.collection.children:
             c_name = coll.name
             
             row = col.row(align=True)
@@ -358,6 +360,15 @@ class NFT_Settings(bpy.types.PropertyGroup):
                 ('alpha', "Transparent", "Transparent background with alpha channel"),
                ]
         )
+    degree : bpy.props.IntProperty(
+        name="Degree",
+        description="Degree of difference between units",
+        default = 2,
+        min = 1,
+        max=10,
+        subtype='UNSIGNED'
+        )
+    
     quantity : bpy.props.IntProperty(
         name="Number of Instances",
         description="Enter a Number of Instances",
