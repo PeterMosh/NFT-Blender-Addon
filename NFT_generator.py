@@ -13,13 +13,7 @@ listOfThirdColl = ['Nose','Eye','Lips']
 
 
 
-#Barcodes[[Init][ObjId]]
-'''
-A[0].append(2)
-A[0].append(1)
-A[1].append(2)
-A[1].append(1)
-'''
+
 
 class OBJECT_OT_NFT_Generator(bpy.types.Operator):
     bl_idname = "object.nft_generator"
@@ -32,7 +26,7 @@ class OBJECT_OT_NFT_Generator(bpy.types.Operator):
         mytool = scene.NFT_prop
         print("NFT generator started")
         listOfUsed = []
-        limit = 2
+        limit = mytool.degree
         for c_name in listOfThirdColl:
             Barcodes[0].append(c_name)
         for c_name in listOfSecondColl:
@@ -105,7 +99,34 @@ class OBJECT_OT_NFT_Generator(bpy.types.Operator):
         Barcodes.clear()
         print("NFT collection was generate")
         return {'FINISHED'}
- 
+#Hide used collections
+def hide_Collections(self, context):
+    scene = context.scene
+    mytool = scene.NFT_prop
+    if mytool.hide_coll == True:
+        for c_name in listOfMainColl:
+            bpy.data.collections[c_name].hide_viewport = True
+            bpy.data.collections[c_name].hide_render = True
+        for c_name in listOfSecondColl:
+            bpy.data.collections[c_name].hide_viewport = True
+            bpy.data.collections[c_name].hide_render = True
+        for c_name in listOfThirdColl:
+            bpy.data.collections[c_name].hide_viewport = True
+            bpy.data.collections[c_name].hide_render = True
+            
+    if mytool.hide_coll == False:
+        for c_name in listOfMainColl:
+            bpy.data.collections[c_name].hide_viewport = False
+            bpy.data.collections[c_name].hide_render = False
+        for c_name in listOfSecondColl:
+            bpy.data.collections[c_name].hide_viewport = False
+            bpy.data.collections[c_name].hide_render = False
+        for c_name in listOfThirdColl:
+            bpy.data.collections[c_name].hide_viewport = False
+            bpy.data.collections[c_name].hide_render = False
+    return {'FINISHED'}
+    
+
 class VIEW3D_PT_NFT_Panel_One(bpy.types.Panel):
     
     bl_space_type = 'VIEW_3D'
@@ -188,14 +209,16 @@ class VIEW3D_PT_NFT_Panel_Two(bpy.types.Panel):
     
     def draw(self, context):
         layout = self.layout    
-        
+        scene = context.scene
+        mytool = scene.NFT_prop
         row = layout.row(align=True)
         row.label(text='First set not-changable collections')
         row = layout.row(align=True)
         row.label(text='Second set randomly collections')
         row = layout.row(align=True)
         row.label(text='Third set collections with at least one object in render')
-        
+        row = layout.row(align=True)
+        row.prop(mytool, "hide_coll", text = "Hide Used Collections")
         col = layout.box().column(align=True)
         
         for coll in bpy.context.collection.children:
@@ -228,10 +251,7 @@ class VIEW3D_PT_NFT_Panel_Two(bpy.types.Panel):
 
 
 
-            
-            
 
-     
 def isEnabled(Name,List):
     for name in List:
         if name == Name: 
@@ -376,6 +396,12 @@ class NFT_Settings(bpy.types.PropertyGroup):
         min = 1,
         max=1000,
         subtype='UNSIGNED'
+        )
+    hide_coll : bpy.props.BoolProperty(
+        name="Hide Collections",
+        description="Hide Used Collections",
+        update=hide_Collections,
+        default = False
         )
     use_light : bpy.props.BoolProperty(
         name="Use Light",
