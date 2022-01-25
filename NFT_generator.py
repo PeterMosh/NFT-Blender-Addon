@@ -11,16 +11,15 @@ listOfMainColl = []
 listOfSecondColl = []
 listOfThirdColl = []
 
-Barcodes = [[],[]]
-#A[[Init][Collections]]
+
+
+#Barcodes[[Init][ObjId]]
+'''
 A[0].append(2)
 A[0].append(1)
-A[0].append(4)
-A[0].append(0)
-A[0].append(1)
 A[1].append(2)
-A[1].append(4)
 A[1].append(1)
+'''
 
 class OBJECT_OT_NFT_Generator(bpy.types.Operator):
     bl_idname = "object.nft_generator"
@@ -28,43 +27,82 @@ class OBJECT_OT_NFT_Generator(bpy.types.Operator):
     
     def execute(self,context):
         scene = context.scene
-        
+
+        Barcodes = [[]]
         mytool = scene.NFT_prop
         print("NFT generator started")
         listOfUsed = []
+        limit = 2
+        for c_name in listOfThirdColl:
+            Barcodes[0].append(c_name)
+        for c_name in listOfSecondColl:
+            if Barcodes[0].count(c_name)==0:
+                Barcodes[0].append(c_name)
         
         for init in range(1,mytool.quantity+1):
             print("Instance", init)
+            Barcodes.append([])
+            repeatRand = True
             ###Create new collections for new NFT instances
-            new_collection = bpy.data.collections.new('Init'+str(init))
+            new_collection = bpy.data.collections.new('Init_'+str(init))
             bpy.context.scene.collection.children['Instances'].children.link(new_collection)
             # Copy objects from main collections
-            for c_name in listOfMainColl:
-                for obj in bpy.data.collections[c_name].objects:
-                    ###Copy object
-                    obj_copy = context.collection.children[c_name].objects[obj.name].copy()
-                    context.collection.children['Instances'].children['Init'+str(init)].objects.link(obj_copy)
-                listOfUsed.append(c_name)
-            # Choose random objects from At Least One collections        
-            for c_name in listOfThirdColl:
-                if listOfUsed.count(c_name)==0:
-                    _rand = random.randint(1,len(bpy.data.collections[c_name].objects))
-                    obj_copy = context.collection.children[c_name].objects[_rand-1].copy()
-                    context.collection.children['Instances'].children['Init'+str(init)].objects.link(obj_copy)
+            while repeatRand:    
+                repeatRand = False
+                print("Generate BarCodes...")
+                for c_name in listOfMainColl:
                     listOfUsed.append(c_name)
-            # Choose objects from random collections
-            for c_name in listOfSecondColl:
-                if listOfUsed.count(c_name)==0:
-                    _rand = random.randint(0,len(bpy.data.collections[c_name].objects))
-                    if _rand != 0:
-                        ###Copy object
-                        obj_copy = context.collection.children[c_name].objects[_rand-1].copy()
-                        context.collection.children['Instances'].children['Init'+str(init)].objects.link(obj_copy)
+                # Choose random objects from At Least One collections        
+                for c_name in listOfThirdColl:
+                    if listOfUsed.count(c_name)==0:
+                        _rand = random.randint(1,len(bpy.data.collections[c_name].objects))
                         listOfUsed.append(c_name)
-            listOfUsed.clear()
-            
+                        Barcodes[init].append(_rand) #Add number of object inside the collection
+                # Choose objects from random collections
+                for c_name in listOfSecondColl:
+                    if listOfUsed.count(c_name)==0:
+                        _rand = random.randint(0,len(bpy.data.collections[c_name].objects))
+                        listOfUsed.append(c_name)
+                        Barcodes[init].append(_rand)
+                
+                if init != 1: 
+                    print("Checking BarCodes...")
+                    for r in range(1,init):
+                        mismatch = 0 
+                        for c in range(0,len(Barcodes[0])):
+                            if Barcodes[r][c] != Barcodes[init][c]: 
+                                mismatch += 1
+                                
+                                if mismatch > limit: 
+                                    repeatRand = False
+                                    break
+                        #Check for double BarCode
+                        if mismatch <= limit:
+                            repeatRand = True
+                            Barcodes[init].clear()
+                            print('Match Unit', init)
+                            break
+                
+                
+                if repeatRand == False:
                     
-        
+                    #Add objs inside new collection    
+                    for c_name in listOfMainColl:
+                        for obj in bpy.data.collections[c_name].objects:
+                            ###Copy main object
+                            obj_copy = context.collection.children[c_name].objects[obj.name].copy()
+                            context.collection.children['Instances'].children['Init_'+str(init)].objects.link(obj_copy)
+                    # Choose random objects
+                    for C, c_name in enumerate(Barcodes[0],0):
+                        if Barcodes[init][C]!=0:
+                            obj_copy = context.collection.children[c_name].objects[Barcodes[init][C]-1].copy()
+                            context.collection.children['Instances'].children['Init_'+str(init)].objects.link(obj_copy)
+                    
+                listOfUsed.clear()            
+                
+            print(Barcodes)
+                    
+        Barcodes.clear()
         print("NFT collection was generate")
         return {'FINISHED'}
  
@@ -158,7 +196,7 @@ class VIEW3D_PT_NFT_Panel_Two(bpy.types.Panel):
         
         col = layout.box().column(align=True)
         
-        for coll in bpy.data.collections:
+        for coll in context.collection.children:
             c_name = coll.name
             
             row = col.row(align=True)
