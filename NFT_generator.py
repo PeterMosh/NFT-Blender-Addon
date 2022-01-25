@@ -91,7 +91,22 @@ class OBJECT_OT_NFT_Generator(bpy.types.Operator):
                         if Barcodes[init][C]!=0:
                             obj_copy = context.collection.children[c_name].objects[Barcodes[init][C]-1].copy()
                             context.collection.children['Instances'].children['Init_'+str(init)].objects.link(obj_copy)
-                    
+                    for obj in bpy.data.collections['Init_'+str(init)].objects:
+                        #Pretarget frame
+                        obj.hide_viewport = True
+                        obj.keyframe_insert('hide_viewport', frame=init-1)
+                        obj.hide_render = True
+                        obj.keyframe_insert('hide_render', frame=init-1)
+                        #Target frame
+                        obj.hide_viewport = False
+                        obj.keyframe_insert('hide_viewport', frame=init)
+                        obj.hide_render = False
+                        obj.keyframe_insert('hide_render', frame=init)
+                        #Next frame
+                        obj.hide_viewport = True
+                        obj.keyframe_insert('hide_viewport', frame=init+1)
+                        obj.hide_render = True
+                        obj.keyframe_insert('hide_render', frame=init+1)
                 listOfUsed.clear()            
                 
             print(Barcodes)
