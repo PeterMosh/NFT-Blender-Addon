@@ -1,6 +1,6 @@
 import bpy
 import random
-from . import NFT_properties
+
 #Add props for save needed collections
 bpy.types.Scene.texturesCollection = bpy.props.StringProperty()
 bpy.types.Scene.lightCollection = bpy.props.StringProperty()
@@ -133,7 +133,6 @@ def hide_Collections(self, context):
         for c_name in listOfThirdColl:
             bpy.data.collections[c_name].hide_viewport = False
             bpy.data.collections[c_name].hide_render = False
-    return {'FINISHED'}
     
 #MAIN RENDER NOT-CHANGEBLE COLLECTIONS
 

@@ -1,6 +1,5 @@
 import bpy
-from . import NFT_generator
-
+from . import NFT_Generator
 class NFT_Settings(bpy.types.PropertyGroup):
 
     camera_name : bpy.props.EnumProperty(
@@ -45,7 +44,7 @@ class NFT_Settings(bpy.types.PropertyGroup):
     hide_coll : bpy.props.BoolProperty(
         name="Hide Collections",
         description="Hide Used Collections",
-        update= NFT_generator.hide_Collections,
+        update= NFT_Generator.hide_Collections,
         default = False
         )
     use_light : bpy.props.BoolProperty(
@@ -64,7 +63,7 @@ class NFT_Settings(bpy.types.PropertyGroup):
         )
         
 classesName = (
-    NFT_Settings
+    NFT_Settings,
 )
 
 def register():

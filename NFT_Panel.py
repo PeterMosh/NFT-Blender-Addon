@@ -1,8 +1,10 @@
 import bpy
-from . import NFT_generator
-from . import NFT_properties
-
-
+from . import NFT_Generator
+'''
+_listOfMainColl = NFT_Generator.listOfMainColl
+_listOfSecondColl = NFT_Generator.listOfSecondColl
+_listOfThirdColl = NFT_Generator.listOfThirdColl
+'''
 class VIEW3D_PT_NFT_Panel_One(bpy.types.Panel):
     
     bl_space_type = 'VIEW_3D'
@@ -68,19 +70,19 @@ class VIEW3D_PT_NFT_Panel_Two(bpy.types.Panel):
             c_name = coll.name
             row = col.row(align=True)
             row.alignment = 'LEFT'
-            _isEnabled = isEnabled(c_name, listOfMainColl)
+            _isEnabled = isEnabled(c_name, NFT_Generator.listOfMainColl)
             #if _isEnabled: row.alert = True
             row.operator("object.reset_main_coll" if _isEnabled else "object.set_main_coll",
             icon='CHECKBOX_HLT' if _isEnabled else 'CHECKBOX_DEHLT',
             text = '',
             emboss=True,).name = c_name
-            _isEnabled = isEnabled(c_name, listOfSecondColl)
+            _isEnabled = isEnabled(c_name, NFT_Generator.listOfSecondColl)
             #if _isEnabled: row.alert = True
             row.operator("object.reset_second_coll" if _isEnabled else "object.set_second_coll",
             icon='CHECKBOX_HLT' if _isEnabled else 'CHECKBOX_DEHLT',
             text = '',
             emboss=True,).name = c_name
-            _isEnabled = isEnabled(c_name, listOfThirdColl)
+            _isEnabled = isEnabled(c_name, NFT_Generator.listOfThirdColl)
             #if _isEnabled: row.alert = True
             row.operator("object.reset_third_coll" if _isEnabled else "object.set_third_coll",
             icon='CHECKBOX_HLT' if _isEnabled else 'CHECKBOX_DEHLT',
@@ -96,18 +98,16 @@ def isEnabled(Name,List):
 
 classesName = (
     VIEW3D_PT_NFT_Panel_One,
-    VIEW3D_PT_NFT_Panel_Two
+    VIEW3D_PT_NFT_Panel_Two,
 )
 
 def register():
     from bpy.utils import register_class
     for cls in classesName:
         register_class(cls)
-    bpy.types.Scene.NFT_prop = bpy.props.PointerProperty(type = NFT_Settings)
     
     
 def unregister():
     from bpy.utils import unregister_class
     for cls in reversed(classesName):
         unregister_class(cls)
-    del bpy.types.Scene.NFT_prop
