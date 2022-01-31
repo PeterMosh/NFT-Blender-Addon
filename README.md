@@ -3,7 +3,7 @@ It's Blender3D Add-on for generate NFT collection
 #### User Interface of NFT Add-on  
 ![Image alt](https://github.com/PeterMosh/NFT-Blender-Addon/raw/master/NFT_interface.PNG)
 #### Result Work of NFT Add-on  
-![Image alt](https://github.com/PeterMosh/NFT-Blender-Addon/raw/master/TokenPack.PNG)
+![Image alt](https://github.com/PeterMosh/NFT-Blender-Addon/raw/master/TokenPack.png)
 ____
 ## How to Test it?
 + Download .zip file
